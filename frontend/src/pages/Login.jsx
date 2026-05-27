@@ -1,9 +1,51 @@
+import api from "../services/api";
 import { FcGoogle } from "react-icons/fc";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
+import { useState } from "react";
 
 const Login = () => {
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      setIsLoading(true);
+      setError("");
+
+      const response = await api.post("/auth/login", {
+        email: formData.email,
+        password: formData.password,
+      });
+
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const handleGoogleLogin = () => {
     alert("Google login will be connected later.");
   };
@@ -15,24 +57,38 @@ const Login = () => {
           Login to continue your fitness journey.
         </p>
 
-        <form className="mt-6 space-y-4">
-            <Input
-              id="login-email"
-              label="Email"
-              type="email"
-              placeholder="you@example.com"
-            />
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <Input
+            id="login-email"
+            label="Email"
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
 
-            <Input
-              id="login-password"
-              label="Password"
-              type="password"
-              placeholder="Enter your password"
-            />
+          <Input
+            id="login-password"
+            label="Password"
+            name="password"
+            type="password"
+            placeholder="Enter your password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
 
-          <Button type="submit" fullWidth>
-            Login
+          <Button type="submit" fullWidth disabled={isLoading}>
+            {isLoading ? "Logging in..." : "Login"}
           </Button>
+
+          {error && (
+            <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+              {error}
+            </p>
+          )}
         </form>
 
         <div className="my-6 flex items-center gap-3">
