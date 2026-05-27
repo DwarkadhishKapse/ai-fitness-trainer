@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema(
     authProvider: {
       type: String,
       enum: ["local", "google"],
-      default: local,
+      default: "local",
     },
 
     googleId: {
