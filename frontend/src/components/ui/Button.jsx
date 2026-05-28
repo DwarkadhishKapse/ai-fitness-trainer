@@ -20,6 +20,7 @@ const Button = ({
       className={`rounded-lg px-5 py-3 font-semibold transition ${
         variants[variant]
       } ${fullWidth ? "w-full" : ""} ${className}`}
+      {...props}
     >
       {children}
     </button>

@@ -1,5 +1,6 @@
-import { Activity, Bot, LayoutDashboard, Salad } from "lucide-react";
-import { NavLink, Outlet } from "react-router-dom";
+import { Activity, Bot, LayoutDashboard, Salad, LogOut } from "lucide-react";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const navItems = [
   {
@@ -25,15 +26,28 @@ const navItems = [
 ];
 
 const AppLayout = () => {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100">
-      <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-slate-800 bg-slate-950 px-4 py-5 lg:block">
-        <div className="mb-8">
-          <p className="text-sm font-medium text-cyan-300">AI Fitness</p>
-          <h1 className="mt-1 text-xl font-bold text-white">Trainer Panel</h1>
+      <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col border-r border-slate-800 bg-slate-950 px-5 py-6 lg:flex">
+        <div>
+          <p className="text-sm font-semibold tracking-wide text-cyan-300">
+            AI Fitness
+          </p>
+
+          <h1 className="mt-1 text-3xl font-bold leading-tight text-white">
+            Trainer Panel
+          </h1>
         </div>
 
-        <nav className="space-y-2">
+        <nav className="mt-10 flex flex-col gap-3">
           {navItems.map((item) => {
             const Icon = item.icon;
 
@@ -42,9 +56,9 @@ const AppLayout = () => {
                 key={item.path}
                 to={item.path}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition ${
+                  `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
                     isActive
-                      ? "bg-cyan-400 text-slate-950"
+                      ? "bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/10"
                       : "text-slate-300 hover:bg-slate-900 hover:text-white"
                   }`
                 }
@@ -55,36 +69,31 @@ const AppLayout = () => {
             );
           })}
         </nav>
+
+        <div className="mt-auto rounded-2xl border border-slate-800 bg-slate-900 p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-white">
+                {user?.name}
+              </p>
+
+              <p className="truncate text-xs text-slate-400">
+                {user?.email}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-700 text-slate-300 transition hover:bg-slate-800 hover:text-white"
+            >
+              <LogOut size={17} />
+            </button>
+          </div>
+        </div>
       </aside>
 
-      <section className="border-b border-slate-800 bg-slate-950 px-4 py-3 lg:hidden">
-        <p className="text-sm font-medium text-cyan-300">AIFitness</p>
-
-        <nav className="mt-3 grid grid-cols-4 gap-2">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-
-            return (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) =>
-                  `flex flex-col items-center justify-center gap-1 rounded-lg px-2 py-2 text-xs font-medium transition ${
-                    isActive
-                      ? "bg-cyan-400 text-slate-950"
-                      : "bg-slate-900 text-slate-300"
-                  }`
-                }
-              >
-                <Icon size={17} />
-                {item.label}
-              </NavLink>
-            );
-          })}
-        </nav>
-      </section>
-
-      <section className="min-h-screen p-6 lg:ml-64">
+      <section className="min-h-screen bg-slate-950 p-8 lg:ml-64">
         <Outlet />
       </section>
     </main>
