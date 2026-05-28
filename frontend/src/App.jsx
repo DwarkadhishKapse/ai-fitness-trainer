@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
-import AppLayout from "./pages/AppLayout";
+import AppLayout from "./components/layout/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Diet from "./pages/Diet";
 import AITrainer from "./pages/AITrainer";
