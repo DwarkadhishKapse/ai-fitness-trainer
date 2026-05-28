@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import ProtectedRoute from "./components/layout/ProtectedRoute";
 import AppLayout from "./pages/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Diet from "./pages/Diet";
@@ -25,23 +26,28 @@ const router = createBrowserRouter([
         element: <Register />,
       },
       {
-        element: <AppLayout />,
+        element: <ProtectedRoute />,
         children: [
           {
-            path: "dashboard",
-            element: <Dashboard />,
-          },
-          {
-            path: "workout",
-            element: <Workout />,
-          },
-          {
-            path: "diet",
-            element: <Diet />,
-          },
-          {
-            path: "ai-trainer",
-            element: <AITrainer />,
+            element: <AppLayout />,
+            children: [
+              {
+                path: "dashboard",
+                element: <Dashboard />,
+              },
+              {
+                path: "workout",
+                element: <Workout />,
+              },
+              {
+                path: "diet",
+                element: <Diet />,
+              },
+              {
+                path: "ai-trainer",
+                element: <AITrainer />,
+              },
+            ],
           },
         ],
       },

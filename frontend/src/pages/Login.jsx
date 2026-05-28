@@ -4,9 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+
+  const { login } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -36,8 +39,10 @@ const Login = () => {
         password: formData.password,
       });
 
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+      login({
+        token: response.data.token,
+        user: response.data.user,
+      });
 
       navigate("/dashboard");
     } catch (err) {
