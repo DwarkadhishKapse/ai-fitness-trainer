@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Dumbbell } from "lucide-react";
 import { workouts } from "../data/workouts";
 
@@ -43,12 +44,12 @@ const Workout = () => {
                 {workout.description}
               </p>
 
-              <button
-                type="button"
+              <Link
+                to={`/workout/${workout.id}`}
                 className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-cyan-400 px-4 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300"
               >
                 <Dumbbell size={18} /> View Workouts
-              </button>
+              </Link>
             </div>
           </article>
         ))}

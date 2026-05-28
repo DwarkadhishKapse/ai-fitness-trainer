@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import Diet from "./pages/Diet";
 import AITrainer from "./pages/AITrainer";
 import Workout from "./pages/Workout";
+import WorkoutDetail from "./pages/WorkoutDetail";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
               {
                 path: "workout",
                 element: <Workout />,
+              },
+              {
+                path: "workout/:workoutId",
+                element: <WorkoutDetail />,
               },
               {
                 path: "diet",
