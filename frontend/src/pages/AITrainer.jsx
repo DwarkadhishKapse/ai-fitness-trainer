@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import Webcam from "react-webcam";
 import { Camera, Dumbbell, Lock, ShieldCheck, Volume2 } from "lucide-react";
 import { workouts } from "../data/workouts";
 import { useSearchParams } from "react-router-dom";
@@ -20,6 +21,7 @@ function findExerciseById(exerciseId) {
 const AITrainer = () => {
   const [searchParams] = useSearchParams();
   const selectedExerciseId = searchParams.get("workout");
+  const [isCameraOn, setIsCameraOn] = useState(false);
 
   const selectedData = findExerciseById(selectedExerciseId);
 
@@ -64,45 +66,60 @@ const AITrainer = () => {
             </div>
 
             <div className="absolute right-4 top-4 rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-xs font-semibold text-slate-300">
-              Camera off
+              {isCameraOn ? "Camera On" : "Camera Off"}
             </div>
 
-            <div className="text-center">
-              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-cyan-400/10 text-cyan-300">
-                <Camera size={22} />
+            {isCameraOn ? (
+              <Webcam
+                audio={false}
+                mirrored
+                className="h-full min-h-[460px] w-full object-cover"
+                videoConstraints={{
+                  facingMode: "user",
+                }}
+              />
+            ) : (
+              <div className="text-center">
+                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-cyan-400/10 text-cyan-300">
+                  <Camera size={22} />
+                </div>
+
+                <h2 className="mt-5 text-2xl font-bold text-white">
+                  Ready when you are
+                </h2>
+
+                <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-400">
+                  Start your camera only when you are comfortable. The trainer
+                  will analyze pose landmarks for form feedback and rep
+                  counting.
+                </p>
+
+                <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                  <div className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-3">
+                    <Lock className="mx-auto text-cyan-300" size={20} />
+                    <p className="mt-2 text-xs font-semibold text-slate-300">
+                      No recording
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-3">
+                    <ShieldCheck
+                      className="mx-auto text-emerald-300"
+                      size={20}
+                    />
+                    <p className="mt-2 text-xs font-semibold text-slate-300">
+                      Local preview
+                    </p>
+                  </div>
+
+                  <div className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-3">
+                    <Volume2 className="mx-auto text-cyan-300" size={20} />
+                    <p className="mt-2 text-xs font-semibold text-slate-300">
+                      Voice tips
+                    </p>
+                  </div>
+                </div>
               </div>
-
-              <h2 className="mt-5 text-2xl font-bold text-white">
-                Ready when you are
-              </h2>
-
-              <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-400">
-                Start your camera only when you are comfortable. The trainer
-                will analyze pose landmarks for form feedback and rep counting.
-              </p>
-
-              <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                <div className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-3">
-                  <Lock className="mx-auto text-cyan-300" size={20} />
-                  <p className="mt-2 text-xs font-semibold text-slate-300">
-                    No recording
-                  </p>
-                </div>
-                <div className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-3">
-                  <ShieldCheck className="mx-auto text-emerald-300" size={20} />
-                  <p className="mt-2 text-xs font-semibold text-slate-300">
-                    Local preview
-                  </p>
-                </div>
-
-                <div className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-3">
-                  <Volume2 className="mx-auto text-cyan-300" size={20} />
-                  <p className="mt-2 text-xs font-semibold text-slate-300">
-                    Voice tips
-                  </p>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -135,9 +152,10 @@ const AITrainer = () => {
 
           <button
             type="button"
+            onClick={() => setIsCameraOn((prev) => !prev)}
             className="mt-6 w-full rounded-lg bg-cyan-400 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300"
           >
-            Start Camera
+            {isCameraOn ? "Stop Camera" : "Start Camera"}
           </button>
         </aside>
       </div>
