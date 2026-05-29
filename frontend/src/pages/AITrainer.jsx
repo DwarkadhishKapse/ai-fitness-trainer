@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Webcam from "react-webcam";
+import { createPoseLandmarker } from "../utils/createPoseLandmarker";
 import { Camera, Dumbbell, Lock, ShieldCheck, Volume2 } from "lucide-react";
 import { workouts } from "../data/workouts";
 import { useSearchParams } from "react-router-dom";
@@ -22,6 +23,64 @@ const AITrainer = () => {
   const [searchParams] = useSearchParams();
   const selectedExerciseId = searchParams.get("workout");
   const [isCameraOn, setIsCameraOn] = useState(false);
+  const [poseLandmarker, setPoseLandmarker] = useState(null);
+  const [modelStatus, setModelStatus] = useState("Loading AI model...");
+  const webcamRef = useRef(null);
+  const animationFrameRef = useRef(null);
+  const [feedback, setFeedback] = useState(
+    "Start AI trainer to receive posture guidance and voice feedback.",
+  );
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadModel() {
+      try {
+        const landMarker = await createPoseLandmarker();
+        if (isMounted) {
+          setPoseLandmarker(landMarker);
+          setModelStatus("AI model ready");
+        }
+      } catch (error) {
+        if (isMounted) {
+          setModelStatus("AI model failed to load");
+        }
+      }
+    }
+    loadModel();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isCameraOn || !poseLandmarker) {
+      return;
+    }
+
+    const detectPose = () => {
+      const video = webcamRef.current?.video;
+
+      if (video && video.readyState === 4) {
+        const result = poseLandmarker.detectForVideo(video, performance.now());
+        if (result.landmarks?.length > 0) {
+          setFeedback("Pose detected. Keep your full body visible.");
+        } else {
+          setFeedback(
+            "No pose detected. Step back and keep your body in frame.",
+          );
+        }
+      }
+      animationFrameRef.current = requestAnimationFrame(detectPose);
+    };
+    detectPose();
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [isCameraOn, poseLandmarker]);
 
   const selectedData = findExerciseById(selectedExerciseId);
 
@@ -71,6 +130,7 @@ const AITrainer = () => {
 
             {isCameraOn ? (
               <Webcam
+                ref={webcamRef}
                 audio={false}
                 mirrored
                 className="h-full min-h-[460px] w-full object-cover"
@@ -146,14 +206,15 @@ const AITrainer = () => {
           <div className="mt-4 rounded-lg bg-slate-950 p-4">
             <p className="text-sm font-semibold text-slate-300">Feedback</p>
             <p className="mt-2 text-sm leading-6 text-slate-400">
-              Start AI trainer to receive posture guidance and voice feedback.
+              {feedback}
             </p>
           </div>
 
           <button
             type="button"
+            disabled={!poseLandmarker}
             onClick={() => setIsCameraOn((prev) => !prev)}
-            className="mt-6 w-full rounded-lg bg-cyan-400 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300"
+            className="mt-6 w-full rounded-lg bg-cyan-400 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isCameraOn ? "Stop Camera" : "Start Camera"}
           </button>

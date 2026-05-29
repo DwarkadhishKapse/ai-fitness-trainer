@@ -1,4 +1,9 @@
 {
     "postman.settings.dotenv-detection-notification-visibility": false,
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "cSpell.words": [
+        "Fileset",
+        "Landmarker",
+        "mediapipe"
+    ]
 }
