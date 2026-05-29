@@ -37,6 +37,11 @@ const ExerciseDetail = () => {
       </Link>
 
       <div className="mt-6 rounded-lg border border-slate-800 bg-slate-900 p-6">
+        <img
+          src={exercise.image}
+          alt={exercise.name}
+          className="mb-6 h-72 w-full rounded-lg object-cover"
+        />
         <p className="text-sm font-semibold uppercase tracking-wide text-cyan-300">
           {workout.category}
         </p>

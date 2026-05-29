@@ -1,13 +1,146 @@
 import React from "react";
+import { Camera, Dumbbell, Lock, ShieldCheck, Volume2 } from "lucide-react";
+import { workouts } from "../data/workouts";
+import { useSearchParams } from "react-router-dom";
+
+function findExerciseById(exerciseId) {
+  for (const workout of workouts) {
+    const exercise = workout.variations.find((item) => item.id === exerciseId);
+
+    if (exercise) {
+      return {
+        workout,
+        exercise,
+      };
+    }
+  }
+  return null;
+}
 
 const AITrainer = () => {
+  const [searchParams] = useSearchParams();
+  const selectedExerciseId = searchParams.get("workout");
+
+  const selectedData = findExerciseById(selectedExerciseId);
+
   return (
     <section>
-      <h1 className="text-3xl font-bold text-white">AI Trainer</h1>
-      <p className="mt-2 text-slate-400">
-        Use webcam-based posture detection, rep counting, and voice feedback for
-        guided workouts.
-      </p>
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wide text-cyan-300">
+            Posture Detection
+          </p>
+          <h1 className="mt-2 text-3xl font-bold text-white">AI Trainer</h1>
+          <p className="mt-2 max-w-2xl text-slate-400">
+            Train with real-time posture guidance, rep counting, and voice
+            feedback using your device camera.
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-emerald-400/20 bg-emerald-400/10 px-4 py-3">
+          <div className="flex items-start gap-3">
+            <ShieldCheck
+              className="mt-0.5 shrink-0 text-emerald-300"
+              size={20}
+            />
+            <div>
+              <p className="text-sm font-semibold text-emerald-200">
+                Your privacy is protected
+              </p>
+              <p className="mt-1 max-w-md text-xs leading-5 text-emerald-100/80">
+                Camera analysis runs only for posture guidance. We do not
+                record, store, or upload your workout video.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-8 grid gap-5 lg:grid-cols-[1.4fr_0.8fr]">
+        <div className="rounded-lg border border-slate-800 bg-slate-900 p-5">
+          <div className="relative flex min-h-[460px] items-center justify-center overflow-hidden rounded-lg border border-slate-800 bg-slate-950">
+            <div className="absolute left-4 top-4 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300">
+              Private session
+            </div>
+
+            <div className="absolute right-4 top-4 rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-xs font-semibold text-slate-300">
+              Camera off
+            </div>
+
+            <div className="text-center">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-cyan-400/10 text-cyan-300">
+                <Camera size={22} />
+              </div>
+
+              <h2 className="mt-5 text-2xl font-bold text-white">
+                Ready when you are
+              </h2>
+
+              <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-400">
+                Start your camera only when you are comfortable. The trainer
+                will analyze pose landmarks for form feedback and rep counting.
+              </p>
+
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                <div className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-3">
+                  <Lock className="mx-auto text-cyan-300" size={20} />
+                  <p className="mt-2 text-xs font-semibold text-slate-300">
+                    No recording
+                  </p>
+                </div>
+                <div className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-3">
+                  <ShieldCheck className="mx-auto text-emerald-300" size={20} />
+                  <p className="mt-2 text-xs font-semibold text-slate-300">
+                    Local preview
+                  </p>
+                </div>
+
+                <div className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-3">
+                  <Volume2 className="mx-auto text-cyan-300" size={20} />
+                  <p className="mt-2 text-xs font-semibold text-slate-300">
+                    Voice tips
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside className="rounded-lg border border-slate-800 bg-slate-900 p-5">
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-cyan-400/10 text-cyan-300">
+            <Dumbbell size={24} />
+          </div>
+
+          <h2 className="mt-5 text-xl font-bold text-white">
+            {selectedData ? selectedData.exercise.name : "No exercise selected"}
+          </h2>
+
+          <p className="mt-2 text-sm text-slate-400">
+            {selectedData
+              ? `${selectedData.workout.name} • ${selectedData.exercise.difficulty}`
+              : "Choose an exercise from the workout section to start AI training."}
+          </p>
+
+          <div className="mt-6 rounded-lg bg-slate-950 p-4">
+            <p className="text-sm font-semibold text-slate-300">Rep Count</p>
+            <p className="mt-2 text-4xl font-bold text-cyan-300">0</p>
+          </div>
+
+          <div className="mt-4 rounded-lg bg-slate-950 p-4">
+            <p className="text-sm font-semibold text-slate-300">Feedback</p>
+            <p className="mt-2 text-sm leading-6 text-slate-400">
+              Start AI trainer to receive posture guidance and voice feedback.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="mt-6 w-full rounded-lg bg-cyan-400 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300"
+          >
+            Start Camera
+          </button>
+        </aside>
+      </div>
     </section>
   );
 };

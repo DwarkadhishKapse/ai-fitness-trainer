@@ -13,6 +13,8 @@ export const workouts = [
         id: "knee-pushups",
         name: "Knee Push Ups",
         difficulty: "Beginner",
+        image:
+          "https://images.unsplash.com/photo-1598971639058-fab3c3109a00?auto=format&fit=crop&w=900&q=80",
         targetMuscles: ["Chest", "Shoulders", "Triceps"],
         steps: [
           "Place your knees on the floor and hands slightly wider than shoulders.",
@@ -30,6 +32,8 @@ export const workouts = [
         id: "standard-pushups",
         name: "Standard Push Ups",
         difficulty: "Beginner",
+        image:
+          "https://images.unsplash.com/photo-1598971639058-fab3c3109a00?auto=format&fit=crop&w=900&q=80",
         targetMuscles: ["Chest", "Shoulders", "Triceps", "Core"],
         steps: [
           "Start in a high plank position.",
@@ -59,6 +63,8 @@ export const workouts = [
         id: "bodyweight-squats",
         name: "Bodyweight Squats",
         difficulty: "Beginner",
+        image:
+          "https://images.unsplash.com/photo-1434608519344-49d77a699e1d?auto=format&fit=crop&w=900&q=80",
         targetMuscles: ["Quads", "Glutes", "Hamstrings"],
         steps: [
           "Stand with feet shoulder-width apart.",
@@ -89,6 +95,8 @@ export const workouts = [
         id: "forearm-plank",
         name: "Forearm Plank",
         difficulty: "Beginner",
+        image:
+          "https://images.unsplash.com/photo-1566241142559-40e1dab266c6?auto=format&fit=crop&w=900&q=80",
         targetMuscles: ["Core", "Shoulders", "Lower Back"],
         steps: [
           "Place forearms on the floor.",
