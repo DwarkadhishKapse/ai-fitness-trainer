@@ -27,6 +27,9 @@ const AITrainer = () => {
   const [modelStatus, setModelStatus] = useState("Loading AI model...");
   const webcamRef = useRef(null);
   const animationFrameRef = useRef(null);
+  const lastSpokenFeedbackRef = useRef("");
+  const lastSpokenAtRef = useRef(0);
+
   const [feedback, setFeedback] = useState(
     "Start AI trainer to receive posture guidance and voice feedback.",
   );
@@ -53,6 +56,33 @@ const AITrainer = () => {
     };
   }, []);
 
+  const speakFeedback = (message) => {
+    const now = Date.now();
+
+    if (!window.speechSynthesis) {
+      return;
+    }
+
+    if (lastSpokenFeedbackRef.current === message) {
+      return;
+    }
+
+    if (now - lastSpokenAtRef.current < 4000) {
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(message);
+    utterance.rate = 1;
+    utterance.pitch = 1;
+    utterance.volume = 0.9;
+
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+
+    lastSpokenFeedbackRef.current = message;
+    lastSpokenAtRef.current = now;
+  };
+
   useEffect(() => {
     if (!isCameraOn || !poseLandmarker) {
       return;
@@ -64,11 +94,14 @@ const AITrainer = () => {
       if (video && video.readyState === 4) {
         const result = poseLandmarker.detectForVideo(video, performance.now());
         if (result.landmarks?.length > 0) {
-          setFeedback("Pose detected. Keep your full body visible.");
+          const message = "Good. Pose detected. Keep your full body visible.";
+          setFeedback(message);
+          speakFeedback(message);
         } else {
-          setFeedback(
-            "No pose detected. Step back and keep your body in frame.",
-          );
+          const message =
+            "No pose detected. Step back and keep your body in frame.";
+          setFeedback(message);
+          speakFeedback(message);
         }
       }
       animationFrameRef.current = requestAnimationFrame(detectPose);
@@ -81,6 +114,12 @@ const AITrainer = () => {
       }
     };
   }, [isCameraOn, poseLandmarker]);
+
+  useEffect(() => {
+    if (!isCameraOn && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+  }, [isCameraOn]);
 
   const selectedData = findExerciseById(selectedExerciseId);
 
@@ -205,9 +244,7 @@ const AITrainer = () => {
 
           <div className="mt-4 rounded-lg bg-slate-950 p-4">
             <p className="text-sm font-semibold text-slate-300">Feedback</p>
-            <p className="mt-2 text-sm leading-6 text-slate-400">
-              {feedback}
-            </p>
+            <p className="mt-2 text-sm leading-6 text-slate-400">{feedback}</p>
           </div>
 
           <button

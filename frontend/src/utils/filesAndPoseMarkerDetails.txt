@@ -1,0 +1,188 @@
+MEDIAPIPE POSE LANDMARKER NOTES
+
+Purpose
+This code creates an AI pose detector using MediaPipe.
+It can detect human body points from webcam/video.
+
+Example body points:
+- nose
+- shoulders
+- elbows
+- knees
+- ankles
+
+
+1. Import MediaPipe Tools
+
+import { FilesetResolver, PoseLandmarker } from "@mediapipe/tasks-vision";
+
+FilesetResolver
+Used to load MediaPipe internal WASM files.
+
+PoseLandmarker
+AI model that detects human body poses.
+
+
+2. Create Async Function
+
+export async function createPoseLandmarker()
+
+async means:
+The function needs time because it downloads files from the internet.
+
+
+3. Load MediaPipe Vision Engine
+
+const vision = await FilesetResolver.forVisionTasks(...)
+
+What happens here?
+- Downloads MediaPipe WASM files
+- Prepares the AI engine
+
+await means:
+Wait until downloading finishes.
+
+
+4. WASM Folder
+
+https://cdn.jsdelivr.net/.../wasm
+
+WASM = WebAssembly
+
+Purpose:
+Runs AI code faster inside the browser.
+
+
+5. Create Pose Landmarker
+
+const poseLandmarker = await PoseLandmarker.createFromOptions(...)
+
+What happens here?
+Creates the pose detection model using:
+- MediaPipe engine
+- model settings
+
+
+6. baseOptions
+
+baseOptions contains model configuration.
+
+
+7. modelAssetPath
+
+modelAssetPath:
+"https://storage.googleapis.com/..."
+
+Purpose:
+Downloads the trained AI pose model.
+
+pose_landmarker_lite
+Lite version of the model.
+
+Advantages:
+- Faster
+- Lightweight
+- Good for browser/mobile
+
+Disadvantage:
+Slightly less accurate than heavy models.
+
+
+8. GPU Delegate
+
+delegate: "GPU"
+
+Purpose:
+Uses GPU (graphics card) for faster processing.
+
+Benefits:
+- Better performance
+- Smooth webcam detection
+
+
+9. Running Mode
+
+runningMode: "VIDEO"
+
+Purpose:
+Tells MediaPipe that input will be video frames.
+
+Examples:
+- Webcam
+- Camera stream
+- Video file
+
+Other modes:
+"IMAGE" = single image
+"VIDEO" = continuous frames
+
+
+10. Number of People Detection
+
+numPoses: 1
+
+Purpose:
+Detect only one person.
+
+Example:
+numPoses: 3
+= detect 3 people
+
+
+11. Return Model
+
+return poseLandmarker;
+
+Purpose:
+Returns the ready-to-use pose detector.
+
+
+Overall Flow
+
+1. Import MediaPipe tools
+2. Load WASM engine
+3. Download AI pose model
+4. Configure settings
+5. Create pose detector
+6. Return detector
+
+
+Example Usage
+
+poseLandmarker.detectForVideo(video)
+
+This analyzes video frames and returns body landmarks.
+
+
+Possible Project Uses
+
+- Fitness apps
+- Yoga posture detection
+- Push-up counter
+- Motion tracking
+- Gesture control
+- Skeleton drawing
+
+
+Important Keywords
+
+FilesetResolver
+= Loads MediaPipe engine
+
+PoseLandmarker
+= AI pose detector
+
+await
+= Wait until loading completes
+
+modelAssetPath
+= AI model file location
+
+delegate: "GPU"
+= Use graphics card
+
+runningMode: "VIDEO"
+= Video/webcam input
+
+numPoses: 1
+= Detect one person
