@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import Webcam from "react-webcam";
 import { createPoseLandmarker } from "../utils/createPoseLandmarker";
 import { analyzePushup } from "../trainers/pushupTrainer";
+import { analyzeSquat } from "../trainers/squatTrainer";
+import { analyzePlank } from "../trainers/plankTrainer";
 import {
   Camera,
   Dumbbell,
@@ -40,6 +42,8 @@ const AITrainer = () => {
   const [repCount, setRepCount] = useState(0);
   const stageRef = useRef("up");
   const lastDetectionTimeRef = useRef(0);
+  const [holdSeconds, setHoldSeconds] = useState(0);
+  const isHoldingPlankRef = useRef(false);
 
   const [feedback, setFeedback] = useState(
     "Start AI trainer to receive posture guidance and voice feedback.",
@@ -102,7 +106,7 @@ const AITrainer = () => {
     const detectPose = () => {
       const video = webcamRef.current?.video;
 
-      const now = performance.now();  // gets the current time in milliseconds
+      const now = performance.now(); // gets the current time in milliseconds
 
       if (
         video &&
@@ -116,14 +120,29 @@ const AITrainer = () => {
           // get the first detected person's body points
           const landmarks = result.landmarks[0];
 
+          let analysis = null;
+
           // Run pushup logic only for pushup exercise
           if (
             selectedExerciseId === "knee-pushups" ||
             selectedExerciseId === "standard-pushups"
           ) {
             // Check elbow angle and decide whether the user is up or down.
-            const analysis = analyzePushup(landmarks, stageRef.current);
+            analysis = analyzePushup(landmarks, stageRef.current);
+          }
 
+          if (selectedExerciseId === "bodyweight-squats") {
+            analysis = analyzeSquat(landmarks, stageRef.current);
+          }
+
+          if (selectedExerciseId === "forearm-plank") {
+            analysis = analyzePlank(landmarks, stageRef.current);
+
+            isHoldingPlankRef.current = plankAnalysis.isHolding;
+            setFeedback(plankAnalysis.feedback);
+          }
+
+          if (analysis) {
             // Remember the newest position for the next camera frame.
             stageRef.current = analysis.stage;
 
@@ -133,7 +152,7 @@ const AITrainer = () => {
               setRepCount((currentCount) => currentCount + 1);
               speakFeedback(analysis.feedback);
             }
-          } else {
+          } else if (selectedExerciseId !== "forearm-plank") {
             const message =
               "Pose detected. AI counting for this exercise is coming soon.";
             setFeedback(message);
@@ -157,6 +176,20 @@ const AITrainer = () => {
   }, [isCameraOn, poseLandmarker, selectedExerciseId]);
 
   useEffect(() => {
+    if (!isCameraOn && selectedExerciseId !== "forearm-plank") {
+      return;
+    }
+
+    const timer = setInterval(() => {
+      if (isHoldingPlankRef.current) {
+        setHoldSeconds((currentSeconds) => currentSeconds + 1);
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isCameraOn, selectedExerciseId]);
+
+  useEffect(() => {
     if (!isCameraOn && window.speechSynthesis) {
       window.speechSynthesis.cancel();
     }
@@ -166,9 +199,11 @@ const AITrainer = () => {
 
   const handleReset = () => {
     setRepCount(0);
+    setHoldSeconds(0);
     stage.current = "up";
     setFeedback("Rep count reset. Start when you are ready.");
     lastSpokenFeedbackRef.current = "";
+    isHoldingPlankRef.current = false;
   };
 
   return (
@@ -287,9 +322,15 @@ const AITrainer = () => {
 
           <div className="mt-6 flex items-center justify-between rounded-lg bg-slate-950 p-4">
             <div>
-              <p className="text-sm font-semibold text-slate-300">Rep Count</p>
+              <p className="text-sm font-semibold text-slate-300">
+                {selectedExerciseId === "forearm-plank"
+                  ? "Hold Time"
+                  : "Rep Count"}
+              </p>
               <p className="mt-2 text-4xl font-bold text-cyan-300">
-                {repCount}
+                {selectedExerciseId === "forearm-plank"
+                  ? `${holdSeconds}s`
+                  : repCount}
               </p>
             </div>
 
