@@ -2,7 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import Webcam from "react-webcam";
 import { createPoseLandmarker } from "../utils/createPoseLandmarker";
 import { analyzePushup } from "../trainers/pushupTrainer";
-import { Camera, Dumbbell, Lock, ShieldCheck, Volume2 } from "lucide-react";
+import {
+  Camera,
+  Dumbbell,
+  Lock,
+  ShieldCheck,
+  RotateCcw,
+  Volume2,
+} from "lucide-react";
 import { workouts } from "../data/workouts";
 import { useSearchParams } from "react-router-dom";
 
@@ -32,6 +39,7 @@ const AITrainer = () => {
   const lastSpokenAtRef = useRef(0);
   const [repCount, setRepCount] = useState(0);
   const stageRef = useRef("up");
+  const lastDetectionTimeRef = useRef(0);
 
   const [feedback, setFeedback] = useState(
     "Start AI trainer to receive posture guidance and voice feedback.",
@@ -94,8 +102,15 @@ const AITrainer = () => {
     const detectPose = () => {
       const video = webcamRef.current?.video;
 
-      if (video && video.readyState === 4) {
-        const result = poseLandmarker.detectForVideo(video, performance.now());
+      const now = performance.now();  // gets the current time in milliseconds
+
+      if (
+        video &&
+        video.readyState === 4 &&
+        now - lastDetectionTimeRef.current >= 120 // runs detection approximately 120ms, around 8 times per second
+      ) {
+        lastDetectionTimeRef.current = now;
+        const result = poseLandmarker.detectForVideo(video, now);
 
         if (result.landmarks?.length > 0) {
           // get the first detected person's body points
@@ -113,13 +128,14 @@ const AITrainer = () => {
             stageRef.current = analysis.stage;
 
             setFeedback(analysis.feedback);
-            speakFeedback(analysis.feedback);
 
             if (analysis.repCompleted) {
               setRepCount((currentCount) => currentCount + 1);
+              speakFeedback(analysis.feedback);
             }
           } else {
-            const message = "Pose detected. AI counting for this exercise is coming soon.";
+            const message =
+              "Pose detected. AI counting for this exercise is coming soon.";
             setFeedback(message);
           }
         } else {
@@ -147,6 +163,13 @@ const AITrainer = () => {
   }, [isCameraOn]);
 
   const selectedData = findExerciseById(selectedExerciseId);
+
+  const handleReset = () => {
+    setRepCount(0);
+    stage.current = "up";
+    setFeedback("Rep count reset. Start when you are ready.");
+    lastSpokenFeedbackRef.current = "";
+  };
 
   return (
     <section>
@@ -262,9 +285,22 @@ const AITrainer = () => {
               : "Choose an exercise from the workout section to start AI training."}
           </p>
 
-          <div className="mt-6 rounded-lg bg-slate-950 p-4">
-            <p className="text-sm font-semibold text-slate-300">Rep Count</p>
-            <p className="mt-2 text-4xl font-bold text-cyan-300">{repCount}</p>
+          <div className="mt-6 flex items-center justify-between rounded-lg bg-slate-950 p-4">
+            <div>
+              <p className="text-sm font-semibold text-slate-300">Rep Count</p>
+              <p className="mt-2 text-4xl font-bold text-cyan-300">
+                {repCount}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleReset}
+              className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-700 text-slate-300 transition hover:border-cyan-400 hover:text-cyan-200"
+              title="Reset rep count"
+            >
+              <RotateCcw size={18} />
+            </button>
           </div>
 
           <div className="mt-4 rounded-lg bg-slate-950 p-4">
