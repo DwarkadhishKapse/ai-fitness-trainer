@@ -7,6 +7,7 @@ export function analyzePushup(landmarks, currentStage) {
   const leftWrist = landmarks[15];
 
   const elbowAngle = calculateAngle(leftShoulder, leftElbow, leftWrist);
+  console.log("Elbow angle:", Math.round(elbowAngle));
 
   if (elbowAngle < 100) {
     return {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Webcam from "react-webcam";
 import { createPoseLandmarker } from "../utils/createPoseLandmarker";
+import { analyzePushup } from "../trainers/pushupTrainer";
 import { Camera, Dumbbell, Lock, ShieldCheck, Volume2 } from "lucide-react";
 import { workouts } from "../data/workouts";
 import { useSearchParams } from "react-router-dom";
@@ -29,6 +30,8 @@ const AITrainer = () => {
   const animationFrameRef = useRef(null);
   const lastSpokenFeedbackRef = useRef("");
   const lastSpokenAtRef = useRef(0);
+  const [repCount, setRepCount] = useState(0);
+  const stageRef = useRef("up");
 
   const [feedback, setFeedback] = useState(
     "Start AI trainer to receive posture guidance and voice feedback.",
@@ -93,10 +96,32 @@ const AITrainer = () => {
 
       if (video && video.readyState === 4) {
         const result = poseLandmarker.detectForVideo(video, performance.now());
+
         if (result.landmarks?.length > 0) {
-          const message = "Good. Pose detected. Keep your full body visible.";
-          setFeedback(message);
-          speakFeedback(message);
+          // get the first detected person's body points
+          const landmarks = result.landmarks[0];
+
+          // Run pushup logic only for pushup exercise
+          if (
+            selectedExerciseId === "knee-pushups" ||
+            selectedExerciseId === "standard-pushups"
+          ) {
+            // Check elbow angle and decide whether the user is up or down.
+            const analysis = analyzePushup(landmarks, stageRef.current);
+
+            // Remember the newest position for the next camera frame.
+            stageRef.current = analysis.stage;
+
+            setFeedback(analysis.feedback);
+            speakFeedback(analysis.feedback);
+
+            if (analysis.repCompleted) {
+              setRepCount((currentCount) => currentCount + 1);
+            }
+          } else {
+            const message = "Pose detected. AI counting for this exercise is coming soon.";
+            setFeedback(message);
+          }
         } else {
           const message =
             "No pose detected. Step back and keep your body in frame.";
@@ -113,7 +138,7 @@ const AITrainer = () => {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [isCameraOn, poseLandmarker]);
+  }, [isCameraOn, poseLandmarker, selectedExerciseId]);
 
   useEffect(() => {
     if (!isCameraOn && window.speechSynthesis) {
@@ -233,13 +258,13 @@ const AITrainer = () => {
 
           <p className="mt-2 text-sm text-slate-400">
             {selectedData
-              ? `${selectedData.workout.name} • ${selectedData.exercise.difficulty}`
+              ? `${selectedData.workout.name} | ${selectedData.exercise.difficulty}`
               : "Choose an exercise from the workout section to start AI training."}
           </p>
 
           <div className="mt-6 rounded-lg bg-slate-950 p-4">
             <p className="text-sm font-semibold text-slate-300">Rep Count</p>
-            <p className="mt-2 text-4xl font-bold text-cyan-300">0</p>
+            <p className="mt-2 text-4xl font-bold text-cyan-300">{repCount}</p>
           </div>
 
           <div className="mt-4 rounded-lg bg-slate-950 p-4">
