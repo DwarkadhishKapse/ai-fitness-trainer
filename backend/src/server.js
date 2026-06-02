@@ -2,8 +2,9 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
+import dns from "dns"
 import authRoutes from "./routes/authRoutes.js";
-import dns from "dns";
+import workoutSessionRoutes from "./routes/workoutSessionRoutes.js";
 
 dns.setServers(["1.1.1.1", "8.8.4.4"]);
 
@@ -13,9 +14,11 @@ connectDB();
 const app = express();
 
 app.use(cors());
+
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/workout-session", workoutSessionRoutes);
 
 app.get("/", (req, res) => {
   res.json({
