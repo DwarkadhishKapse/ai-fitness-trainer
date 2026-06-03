@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import api from "../services/api";
 import Webcam from "react-webcam";
 import { createPoseLandmarker } from "../utils/createPoseLandmarker";
 import { analyzePushup } from "../trainers/pushupTrainer";
@@ -121,10 +122,6 @@ const AITrainer = () => {
           // get the first detected person's body points
           const landmarks = result.landmarks[0];
 
-          console.log(landmarks[11]);
-          console.log(landmarks[13]);
-          console.log(landmarks[15]);
-
           let analysis = null;
 
           // Run pushup logic only for pushup exercise
@@ -212,6 +209,31 @@ const AITrainer = () => {
 
     lastSpokenFeedbackRef.current = "";
     isHoldingPlankRef.current = false;
+  };
+
+  const handleSaveWorkout = async () => {
+    console.log("Save button clicked");
+    try {
+      const payload = {
+        workoutId: selectedExerciseId,
+        exerciseName: selectedData.exercise.name,
+        metricType: selectedExerciseId === "forearm-plank" ? "seconds" : "reps",
+        metricValue:
+          selectedExerciseId === "forearm-plank" ? holdSeconds : repCount,
+      };
+      console.log("Payload:", payload);
+      const response = await api.post("/workout-sessions", payload);
+
+      console.log("Workout saved:", response.data);
+
+      setIsWorkoutSaved(true);
+    } catch (error) {
+      console.error("FULL ERROR:", error);
+      console.error(
+        "Failed to save workout:",
+        error.response?.data || error.message,
+      );
+    }
   };
 
   return (
@@ -386,6 +408,7 @@ const AITrainer = () => {
               </p>
               <button
                 type="button"
+                onClick={handleSaveWorkout}
                 disabled={
                   isWorkoutSaved ||
                   (selectedExerciseId === "forearm-plank"
