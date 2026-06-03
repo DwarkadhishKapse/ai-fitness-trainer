@@ -44,6 +44,7 @@ const AITrainer = () => {
   const lastDetectionTimeRef = useRef(0);
   const [holdSeconds, setHoldSeconds] = useState(0);
   const isHoldingPlankRef = useRef(false);
+  const [isWorkoutSaved, setIsWorkoutSaved] = useState(false);
 
   const [feedback, setFeedback] = useState(
     "Start AI trainer to receive posture guidance and voice feedback.",
@@ -120,6 +121,10 @@ const AITrainer = () => {
           // get the first detected person's body points
           const landmarks = result.landmarks[0];
 
+          console.log(landmarks[11]);
+          console.log(landmarks[13]);
+          console.log(landmarks[15]);
+
           let analysis = null;
 
           // Run pushup logic only for pushup exercise
@@ -131,12 +136,12 @@ const AITrainer = () => {
             analysis = analyzePushup(landmarks, stageRef.current);
           }
 
-          if (selectedExerciseId === "bodyweight-squats") {
+          if (selectedExerciseId === "standard-squats") {
             analysis = analyzeSquat(landmarks, stageRef.current);
           }
 
           if (selectedExerciseId === "forearm-plank") {
-            analysis = analyzePlank(landmarks, stageRef.current);
+            const plankAnalysis = analyzePlank(landmarks);
 
             isHoldingPlankRef.current = plankAnalysis.isHolding;
             setFeedback(plankAnalysis.feedback);
@@ -200,8 +205,11 @@ const AITrainer = () => {
   const handleReset = () => {
     setRepCount(0);
     setHoldSeconds(0);
-    stage.current = "up";
+    stageRef.current = "up";
     setFeedback("Rep count reset. Start when you are ready.");
+
+    setIsWorkoutSaved(false);
+
     lastSpokenFeedbackRef.current = "";
     isHoldingPlankRef.current = false;
   };
@@ -306,13 +314,17 @@ const AITrainer = () => {
         </div>
 
         <aside className="rounded-lg border border-slate-800 bg-slate-900 p-5">
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-cyan-400/10 text-cyan-300">
-            <Dumbbell size={24} />
-          </div>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-white">
+              {selectedData
+                ? selectedData.exercise.name
+                : "No exercise selected"}
+            </h2>
 
-          <h2 className="mt-5 text-xl font-bold text-white">
-            {selectedData ? selectedData.exercise.name : "No exercise selected"}
-          </h2>
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-cyan-400/10 text-cyan-300">
+              <Dumbbell size={24} />
+            </div>
+          </div>
 
           <p className="mt-2 text-sm text-slate-400">
             {selectedData
@@ -347,6 +359,44 @@ const AITrainer = () => {
           <div className="mt-4 rounded-lg bg-slate-950 p-4">
             <p className="text-sm font-semibold text-slate-300">Feedback</p>
             <p className="mt-2 text-sm leading-6 text-slate-400">{feedback}</p>
+          </div>
+
+          <div className="mt-4 rounded-lg bg-slate-950 p-4">
+            <p className="text-sm font-semibold text-slate-300">
+              Workout Results
+            </p>
+
+            <div className="mt-3 space-y-2 text-sm text-slate-400">
+              <p>
+                Exercise:{" "}
+                <span className="text-slate-200">
+                  {selectedData?.exercise.name || "-"}
+                </span>
+              </p>
+              <p>
+                {selectedExerciseId === "forearm-plank"
+                  ? "Hold Time"
+                  : "Total Reps"}
+                :{" "}
+                <span className="text-cyan-300 font-semibold">
+                  {selectedExerciseId === "forearm-plank"
+                    ? `${holdSeconds}`
+                    : repCount}
+                </span>
+              </p>
+              <button
+                type="button"
+                disabled={
+                  isWorkoutSaved ||
+                  (selectedExerciseId === "forearm-plank"
+                    ? holdSeconds === 0
+                    : repCount === 0)
+                }
+                className="mt-4 w-full rounded-lg bg-emerald-500 px-4 py-3 font-semibold text-white transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isWorkoutSaved ? "Workout Saved ✓" : "Save Workout"}
+              </button>
+            </div>
           </div>
 
           <button

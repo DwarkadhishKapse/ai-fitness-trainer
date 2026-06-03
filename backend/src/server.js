@@ -18,7 +18,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
-app.use("/api/workout-session", workoutSessionRoutes);
+app.use("/api/workout-sessions", workoutSessionRoutes);
 
 app.get("/", (req, res) => {
   res.json({
