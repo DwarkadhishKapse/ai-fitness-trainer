@@ -60,8 +60,8 @@ export const workouts = [
       "https://images.unsplash.com/photo-1434608519344-49d77a699e1d?auto=format&fit=crop&w=900&q=80",
     variations: [
       {
-        id: "bodyweight-squats",
-        name: "Bodyweight Squats",
+        id: "standard-squats",
+        name: "Standard Squats",
         difficulty: "Beginner",
         image:
           "https://images.unsplash.com/photo-1434608519344-49d77a699e1d?auto=format&fit=crop&w=900&q=80",
