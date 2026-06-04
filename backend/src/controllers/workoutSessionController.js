@@ -11,7 +11,7 @@ export async function createWorkoutSession(req, res) {
         message: "Workout ID, exercise name, and metric type are required",
       });
     }
-    
+
     const session = await WorkoutSession.create({
       user: req.userId,
       workoutId,
@@ -27,6 +27,21 @@ export async function createWorkoutSession(req, res) {
   } catch (error) {
     return res.status(500).json({
       message: "Failed to save workout session",
+      error: error.message,
+    });
+  }
+}
+
+export async function getWorkoutSessions(req, res) {
+  try {
+    const sessions = await WorkoutSession.find({
+      user: req.userId,
+    }).sort({ createdAt: -1 });
+
+    return res.status(200).json({ sessions });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to fetch workout session",
       error: error.message,
     });
   }
