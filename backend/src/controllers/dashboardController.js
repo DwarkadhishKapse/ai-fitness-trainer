@@ -29,7 +29,7 @@ export async function getDashboardStats(req, res) {
     for (const exercise in exerciseCounts) {
       if (exerciseCounts[exercise] > maxCount) {
         maxCount = exerciseCounts[exercise];
-        favoriteExercise = maxCount;
+        favoriteExercise = exercise;
       }
     }
 
