@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
 import DashboardStatCard from "../components/dashboard/DashboardStatCard";
+import WeeklyProgressChart from "../components/dashboard/WeeklyProgressChart";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -9,6 +10,8 @@ const Dashboard = () => {
     totalPlankTime: 0,
     favoriteExercise: "N/A",
   });
+
+  const [weeklyData, setWeeklyData] = useState([]);
 
   const [recentSessions, setRecentSessions] = useState([]);
 
@@ -22,13 +25,11 @@ const Dashboard = () => {
       try {
         const response = await api.get("/dashboard/stats");
         const sessionResponse = await api.get("/workout-sessions");
-
         const weeklyResponse = await api.get("/dashboard/weekly-progress");
-
-        console.log(weeklyResponse.data);
 
         setStats(response.data);
         setRecentSessions(sessionResponse.data.sessions.slice(0, 5));
+        setWeeklyData(weeklyResponse.data);
       } catch (error) {
         setError(
           error.response?.data?.message || "Failed to fetch dashboard stats",
@@ -89,6 +90,8 @@ const Dashboard = () => {
           icon="⭐"
         />
       </div>
+
+      <WeeklyProgressChart data={weeklyData} />
 
       {/* Recent Activity */}
       <section className="rounded-3xl border border-cyan-900/30 bg-slate-900/70 p-6 backdrop-blur-sm">

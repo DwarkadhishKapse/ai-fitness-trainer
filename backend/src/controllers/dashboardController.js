@@ -48,7 +48,6 @@ export async function getDashboardStats(req, res) {
 }
 
 export async function getWeeklyProgress(req, res) {
-  console.log("weekly progress route hit");
   try {
     const sessions = await WorkoutSession.find({
       user: req.userId,
@@ -64,6 +63,8 @@ export async function getWeeklyProgress(req, res) {
       Sun: 0,
     };
 
+    const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
     for (const session of sessions) {
       const date = new Date(session.createdAt);
 
@@ -77,11 +78,8 @@ export async function getWeeklyProgress(req, res) {
       workouts,
     }));
 
-    const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    return res.status(200).json(chartData)
 
-    return res.status(200).json({
-      sessions,
-    });
   } catch (error) {
     return res.status(500).json({
       message: "Failed to fetch weekly progress",
