@@ -78,11 +78,39 @@ export async function getWeeklyProgress(req, res) {
       workouts,
     }));
 
-    return res.status(200).json(chartData)
-
+    return res.status(200).json(chartData);
   } catch (error) {
     return res.status(500).json({
       message: "Failed to fetch weekly progress",
+      error: error.message,
+    });
+  }
+}
+
+export async function getExerciseDistribution(req, res) {
+  try {
+    const sessions = await WorkoutSession.find({
+      user: req.userId,
+    });
+
+    const exerciseCounts = {};
+
+    for (const session of sessions) {
+      exerciseCounts[session.exerciseName] =
+        (exerciseCounts[session.exerciseName] || 0) + 1;
+    }
+
+    const chartData = Object.entries(exerciseCounts).map(
+      ([exercise, count]) => ({
+        exercise,
+        count,
+      }),
+    );
+
+    return res.status(200).json(chartData);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to fetch exercise distribution",
       error: error.message,
     });
   }

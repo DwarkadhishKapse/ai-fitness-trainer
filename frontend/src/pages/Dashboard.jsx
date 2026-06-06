@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../services/api";
 import DashboardStatCard from "../components/dashboard/DashboardStatCard";
 import WeeklyProgressChart from "../components/dashboard/WeeklyProgressChart";
+import ExerciseDistributionChart from "../components/dashboard/ExerciseDistributionChart";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -12,7 +13,7 @@ const Dashboard = () => {
   });
 
   const [weeklyData, setWeeklyData] = useState([]);
-
+  const [exerciseDistribution, setExerciseDistribution] = useState([]);
   const [recentSessions, setRecentSessions] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -26,10 +27,14 @@ const Dashboard = () => {
         const response = await api.get("/dashboard/stats");
         const sessionResponse = await api.get("/workout-sessions");
         const weeklyResponse = await api.get("/dashboard/weekly-progress");
+        const distributionResponse = await api.get(
+          "/dashboard/exercise-distribution",
+        );
 
         setStats(response.data);
         setRecentSessions(sessionResponse.data.sessions.slice(0, 5));
         setWeeklyData(weeklyResponse.data);
+        setExerciseDistribution(distributionResponse.data);
       } catch (error) {
         setError(
           error.response?.data?.message || "Failed to fetch dashboard stats",
@@ -93,7 +98,8 @@ const Dashboard = () => {
 
       <WeeklyProgressChart data={weeklyData} />
 
-      {/* Recent Activity */}
+      <ExerciseDistributionChart data={exerciseDistribution} />
+
       <section className="rounded-3xl border border-cyan-900/30 bg-slate-900/70 p-6 backdrop-blur-sm">
         <div className="mb-6">
           <p className="text-sm font-semibold uppercase tracking-wider text-cyan-400">
