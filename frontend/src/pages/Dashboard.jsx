@@ -23,6 +23,10 @@ const Dashboard = () => {
         const response = await api.get("/dashboard/stats");
         const sessionResponse = await api.get("/workout-sessions");
 
+        const weeklyResponse = await api.get("/dashboard/weekly-progress");
+
+        console.log(weeklyResponse.data);
+
         setStats(response.data);
         setRecentSessions(sessionResponse.data.sessions.slice(0, 5));
       } catch (error) {

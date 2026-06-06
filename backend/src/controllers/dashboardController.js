@@ -46,3 +46,46 @@ export async function getDashboardStats(req, res) {
     });
   }
 }
+
+export async function getWeeklyProgress(req, res) {
+  console.log("weekly progress route hit");
+  try {
+    const sessions = await WorkoutSession.find({
+      user: req.userId,
+    });
+
+    const weeklyData = {
+      Mon: 0,
+      Tue: 0,
+      Wed: 0,
+      Thu: 0,
+      Fri: 0,
+      Sat: 0,
+      Sun: 0,
+    };
+
+    for (const session of sessions) {
+      const date = new Date(session.createdAt);
+
+      const day = dayNames[date.getDay()];
+
+      weeklyData[day]++;
+    }
+
+    const chartData = Object.entries(weeklyData).map(([day, workouts]) => ({
+      day,
+      workouts,
+    }));
+
+    const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    return res.status(200).json({
+      sessions,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to fetch weekly progress",
+      error: error.message,
+    });
+  }
+}
