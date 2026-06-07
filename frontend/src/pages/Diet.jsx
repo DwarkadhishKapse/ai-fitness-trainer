@@ -1,6 +1,7 @@
 import api from "../services/api";
 import { useState, useEffect } from "react";
 import AddMealForm from "../components/diet/AddMealForm";
+import MealCard from "../components/diet/MealCard";
 
 const Diet = () => {
   const [meals, setMeals] = useState([]);
@@ -69,36 +70,7 @@ const Diet = () => {
         ) : (
           <div className="space-y-4">
             {meals.map((meal) => (
-              <div
-                key={meal._id}
-                className="
-                flex items-center justify-between
-                rounded-2xl
-                border border-slate-800
-                bg-slate-950/40
-                p-5
-                transition-all
-                duration-300
-                hover:border-cyan-500/30
-                hover:bg-slate-950/60
-              "
-              >
-                <div>
-                  <h3 className="font-semibold text-white">{meal.mealName}</h3>
-
-                  <p className="mt-1 text-sm text-slate-400">{meal.mealType}</p>
-                </div>
-
-                <div className="text-right">
-                  <p className="text-lg font-bold text-cyan-400">
-                    {meal.calories} Cal
-                  </p>
-
-                  <p className="text-xs text-slate-500">
-                    P: {meal.protein}g • C: {meal.carbs}g • F: {meal.fat}g
-                  </p>
-                </div>
-              </div>
+              <MealCard key={meal._id} meal={meal} />
             ))}
           </div>
         )}

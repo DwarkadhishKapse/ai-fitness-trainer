@@ -4,7 +4,7 @@ export async function createMeal(req, res) {
   try {
     const { mealName, mealType, calories, protein, carbs, fat } = req.body;
 
-    const Meal = await Meal.create({
+    const meal = await Meal.create({
       user: req.userId,
       mealName,
       mealType,
@@ -16,6 +16,7 @@ export async function createMeal(req, res) {
 
     return res.status(201).json(meal);
   } catch (error) {
+    console.error(error);
     return res.status(500).json({
       message: "Failed to create meal",
       error: error.message,
