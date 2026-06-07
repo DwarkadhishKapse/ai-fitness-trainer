@@ -3,6 +3,7 @@ import api from "../services/api";
 import DashboardStatCard from "../components/dashboard/DashboardStatCard";
 import WeeklyProgressChart from "../components/dashboard/WeeklyProgressChart";
 import ExerciseDistributionChart from "../components/dashboard/ExerciseDistributionChart";
+import PersonalRecords from "../components/dashboard/PersonalRecords";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -15,6 +16,10 @@ const Dashboard = () => {
   const [weeklyData, setWeeklyData] = useState([]);
   const [exerciseDistribution, setExerciseDistribution] = useState([]);
   const [recentSessions, setRecentSessions] = useState([]);
+  const [personalRecords, setPersonalRecords] = useState({
+    bestPushUps: 0,
+    longestPlank: 0,
+  });
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -30,11 +35,13 @@ const Dashboard = () => {
         const distributionResponse = await api.get(
           "/dashboard/exercise-distribution",
         );
+        const recordsResponse = await api.get("/dashboard/personal-records");
 
         setStats(response.data);
         setRecentSessions(sessionResponse.data.sessions.slice(0, 5));
         setWeeklyData(weeklyResponse.data);
         setExerciseDistribution(distributionResponse.data);
+        setPersonalRecords(recordsResponse.data);
       } catch (error) {
         setError(
           error.response?.data?.message || "Failed to fetch dashboard stats",
@@ -99,6 +106,8 @@ const Dashboard = () => {
       <WeeklyProgressChart data={weeklyData} />
 
       <ExerciseDistributionChart data={exerciseDistribution} />
+
+      <PersonalRecords records={personalRecords}/>
 
       <section className="rounded-3xl border border-cyan-900/30 bg-slate-900/70 p-6 backdrop-blur-sm">
         <div className="mb-6">

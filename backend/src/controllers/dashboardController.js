@@ -115,3 +115,39 @@ export async function getExerciseDistribution(req, res) {
     });
   }
 }
+
+export async function getPersonalRecords(req, res) {
+  let bestPushUps = 0;
+  let longestPlank = 0;
+  try {
+    const sessions = await WorkoutSession.find({
+      user: req.userId,
+    });
+
+    for (const session of sessions) {
+      if (
+        session.exerciseName === "Standard Push Ups" &&
+        session.metricValue > bestPushUps
+      ) {
+        bestPushUps = session.metricValue;
+      }
+      if (
+        session.exerciseName === "Plank" &&
+        session.metricValue > longestPlank
+      ) {
+        longestPlank = session.metricValue;
+      }
+    }
+
+    return res.status(200).json({
+      bestPushUps,
+      longestPlank,
+    });
+    
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to fetch personal records",
+      error: error.message,
+    });
+  }
+}
