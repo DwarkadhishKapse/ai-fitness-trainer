@@ -70,7 +70,7 @@ const Diet = () => {
         ) : (
           <div className="space-y-4">
             {meals.map((meal) => (
-              <MealCard key={meal._id} meal={meal} />
+              <MealCard key={meal._id} meal={meal} fetchMeals={fetchMeals} />
             ))}
           </div>
         )}

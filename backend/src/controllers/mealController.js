@@ -57,12 +57,13 @@ export async function deleteMeal(req, res) {
       });
     }
 
-    await meal.findByIdAndDelete(req.params.id);
+    await meal.deleteOne();
 
     return res.status(201).json({
       message: "Meal deleted successfully",
     });
   } catch (error) {
+    console.error(error);
     return res.status(500).json({
       message: "Failed to delete meal",
       error: error.message,
