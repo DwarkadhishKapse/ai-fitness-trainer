@@ -9,7 +9,7 @@ const AIDiet = () => {
     gender: "male",
     goal: "muscle gain",
   });
-  const [dietPlan, setDietPlan] = useState("");
+  const [dietPlan, setDietPlan] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -25,8 +25,9 @@ const AIDiet = () => {
 
     try {
       const response = await api.post("/ai/diet-plan", formData);
+      console.log(response.data);
 
-      setDietPlan(response.data.recommendation);
+      setDietPlan(response.data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -223,11 +224,99 @@ const AIDiet = () => {
         </form>
       </div>
       {dietPlan && (
-        <div className="rounded-3xl border border-cyan-900/30 bg-slate-900/70 p-6">
-          <h2 className="mb-4 text-2xl font-bold text-white">AI Response</h2>
+        <section className="space-y-6">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wider text-cyan-400">
+              AI GENERATED PLAN
+            </p>
 
-          <pre className="whitespace-pre-wrap text-slate-300">{dietPlan}</pre>
-        </div>
+            <h2 className="mt-1 text-3xl font-bold text-white">
+              Personalized Nutrition Plan
+            </h2>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-4">
+            <div className="rounded-2xl border border-cyan-900/30 bg-slate-900/70 p-5">
+              <p className="text-sm text-slate-400">Calories</p>
+              <h3 className="mt-2 text-3xl font-bold text-cyan-400">
+                {dietPlan.calories}
+              </h3>
+            </div>
+
+            <div className="rounded-2xl border border-cyan-900/30 bg-slate-900/70 p-5">
+              <p className="text-sm text-slate-400">Protein</p>
+              <h3 className="mt-2 text-3xl font-bold text-cyan-400">
+                {dietPlan.protein}
+              </h3>
+            </div>
+
+            <div className="rounded-2xl border border-cyan-900/30 bg-slate-900/70 p-5">
+              <p className="text-sm text-slate-400">Carbs</p>
+              <h3 className="mt-2 text-3xl font-bold text-cyan-400">
+                {dietPlan.carbs}
+              </h3>
+            </div>
+
+            <div className="rounded-2xl border border-cyan-900/30 bg-slate-900/70 p-5">
+              <p className="text-sm text-slate-400">Fat</p>
+              <h3 className="mt-2 text-3xl font-bold text-cyan-400">
+                {dietPlan.fat}
+              </h3>
+            </div>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
+              <h3 className="mb-4 text-xl font-bold text-white">
+                🍳 Breakfast
+              </h3>
+
+              <ul className="space-y-2">
+                {dietPlan.breakfast.map((item, index) => (
+                  <li key={index} className="text-slate-300">
+                    • {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
+              <h3 className="mb-4 text-xl font-bold text-white">🥗 Lunch</h3>
+
+              <ul className="space-y-2">
+                {dietPlan.lunch.map((item, index) => (
+                  <li key={index} className="text-slate-300">
+                    • {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
+              <h3 className="mb-4 text-xl font-bold text-white">🍽️ Dinner</h3>
+
+              <ul className="space-y-2">
+                {dietPlan.dinner.map((item, index) => (
+                  <li key={index} className="text-slate-300">
+                    • {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
+              <h3 className="mb-4 text-xl font-bold text-white">🥜 Snacks</h3>
+
+              <ul className="space-y-2">
+                {dietPlan.snacks.map((item, index) => (
+                  <li key={index} className="text-slate-300">
+                    • {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
       )}
     </section>
   );

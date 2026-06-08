@@ -4,7 +4,8 @@ export async function generateDietPlan(req, res) {
   try {
     const { age, weight, height, gender, goal } = req.body;
 
-    const prompt = `You are a fitness nutrition coach.
+    const prompt = `
+You are a fitness nutrition expert.
 
 User Details:
 Age: ${age}
@@ -13,39 +14,24 @@ Height: ${height} cm
 Gender: ${gender}
 Goal: ${goal}
 
-Generate a SHORT and EASY TO READ diet plan.
+Return ONLY valid JSON.
+
+{
+  "calories": "",
+  "protein": "",
+  "carbs": "",
+  "fat": "",
+  "breakfast": [],
+  "lunch": [],
+  "dinner": [],
+  "snacks": []
+}
 
 Rules:
-- Maximum 200 words
-- No explanations
-- No BMR calculations
-- No TDEE calculations
-- No long paragraphs
-- Use simple formatting
-
-Format exactly like:
-
-DAILY TARGETS
-Calories: XXXX kcal
-Protein: XXg
-Carbs: XXg
-Fat: XXg
-
-BREAKFAST
-- Food 1
-- Food 2
-
-LUNCH
-- Food 1
-- Food 2
-
-DINNER
-- Food 1
-- Food 2
-
-SNACKS
-- Food 1
-- Food 2
+- No markdown
+- No explanation
+- No code blocks
+- Return JSON only
 `;
 
     const response = await ai.models.generateContent({
@@ -53,11 +39,9 @@ SNACKS
       contents: prompt,
     });
 
-    const recommendation = response.text;
+    const recommendation = JSON.parse(response.text);
 
-    return res.status(200).json({
-      recommendation,
-    });
+    return res.status(200).json(recommendation);
   } catch (error) {
     return res.status(500).json({
       message: "Failed to generate diet plan",
