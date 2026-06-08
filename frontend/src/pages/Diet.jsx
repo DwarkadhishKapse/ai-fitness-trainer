@@ -2,6 +2,7 @@ import api from "../services/api";
 import { useState, useEffect } from "react";
 import AddMealForm from "../components/diet/AddMealForm";
 import MealCard from "../components/diet/MealCard";
+import NutritionSummary from "../components/diet/NutritionSummary";
 
 const Diet = () => {
   const [meals, setMeals] = useState([]);
@@ -47,6 +48,8 @@ const Diet = () => {
           goals.
         </p>
       </div>
+
+      <NutritionSummary meals={meals} />
 
       <AddMealForm fetchMeals={fetchMeals} />
 
