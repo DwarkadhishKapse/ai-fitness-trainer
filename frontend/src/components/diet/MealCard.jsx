@@ -4,11 +4,6 @@ import { Trash2 } from "lucide-react";
 
 const MealCard = ({ meal, fetchMeals }) => {
   const handleDelete = async () => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this meal?",
-    );
-
-    if (!confirmed) return;
     try {
       await api.delete(`/meals/${meal._id}`);
       await fetchMeals();

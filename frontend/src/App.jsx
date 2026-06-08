@@ -5,13 +5,14 @@ import Dashboard from "./pages/Dashboard";
 import Diet from "./pages/Diet";
 import AITrainer from "./pages/AITrainer";
 import Workout from "./pages/Workout";
-import WorkoutHistory from "./pages/WorkoutHistory"
+import WorkoutHistory from "./pages/WorkoutHistory";
 import WorkoutDetail from "./pages/WorkoutDetail";
 import ExerciseDetail from "./pages/ExerciseDetail";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import PublicRoute from "./components/layout/PublicRoute";
+import AIDiet from "./pages/AIDiet";
 
 const router = createBrowserRouter([
   {
@@ -50,7 +51,7 @@ const router = createBrowserRouter([
               },
               {
                 path: "workout-history",
-                element: <WorkoutHistory/>
+                element: <WorkoutHistory />,
               },
               {
                 path: "workout/:workoutId",
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
               {
                 path: "diet",
                 element: <Diet />,
+              },
+              {
+                path: "ai-diet",
+                element: <AIDiet />,
               },
               {
                 path: "ai-trainer",
