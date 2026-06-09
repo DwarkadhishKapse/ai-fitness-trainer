@@ -27,10 +27,17 @@ const AIDiet = () => {
     setDietPlan(null);
     try {
       const response = await api.post("/ai/diet-plan", formData);
-      console.log(response.data);
 
       setDietPlan(response.data);
-      setGeneratedAt(new Date().toLocaleString());
+      setGeneratedAt(
+        new Date().toLocaleString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      );
     } catch (error) {
       console.error(error);
     } finally {
@@ -238,10 +245,10 @@ const AIDiet = () => {
 
             <h2 className="mt-1 text-3xl font-bold text-white">
               Personalized Nutrition Plan
-              <p className="mt-3 text-sm text-slate-400">
-                Generated on {generatedAt}
-              </p>
             </h2>
+            <p className="mt-2 text-sm text-slate-400">
+              Generated on {generatedAt}
+            </p>
           </div>
 
           <div className="grid gap-4 md:grid-cols-4">
