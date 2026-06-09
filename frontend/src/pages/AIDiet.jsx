@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import api from "../services/api";
+import AIDietSkeleton from "../components/ai/AIDietSkeleton";
 
 const AIDiet = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ const AIDiet = () => {
   });
   const [dietPlan, setDietPlan] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [generatedAt, setGeneratedAt] = useState("");
 
   const handleChange = (e) => {
     setFormData({
@@ -22,12 +24,13 @@ const AIDiet = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+    setDietPlan(null);
     try {
       const response = await api.post("/ai/diet-plan", formData);
       console.log(response.data);
 
       setDietPlan(response.data);
+      setGeneratedAt(new Date().toLocaleString());
     } catch (error) {
       console.error(error);
     } finally {
@@ -223,6 +226,9 @@ const AIDiet = () => {
           </button>
         </form>
       </div>
+
+      {loading && <AIDietSkeleton />}
+
       {dietPlan && (
         <section className="space-y-6">
           <div>
@@ -232,6 +238,9 @@ const AIDiet = () => {
 
             <h2 className="mt-1 text-3xl font-bold text-white">
               Personalized Nutrition Plan
+              <p className="mt-3 text-sm text-slate-400">
+                Generated on {generatedAt}
+              </p>
             </h2>
           </div>
 
@@ -316,6 +325,20 @@ const AIDiet = () => {
               </ul>
             </div>
           </div>
+          <button
+            onClick={handleSubmit}
+            className="
+    rounded-xl
+    border border-cyan-500
+    px-5 py-3
+    font-semibold
+    text-cyan-400
+    transition-all
+    hover:bg-cyan-500/10
+  "
+          >
+            Generate Another Plan
+          </button>
         </section>
       )}
     </section>
