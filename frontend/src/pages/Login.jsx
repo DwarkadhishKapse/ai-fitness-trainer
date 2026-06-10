@@ -3,7 +3,7 @@ import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
@@ -15,8 +15,16 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const [showSessionExpired, setShowSessionExpired] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem("sessionExpired")) {
+      setShowSessionExpired(true);
+      localStorage.removeItem("sessionExpired");
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -57,6 +65,34 @@ const Login = () => {
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-slate-100">
       <section className="w-full max-w-md rounded-lg border border-slate-800 bg-slate-900 p-6 shadow-xl shadow-slate-950/50">
+        {showSessionExpired && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+            <div className="w-full max-w-sm rounded-2xl border border-slate-700 bg-slate-900 p-6 text-center shadow-xl">
+              <h2 className="text-2xl font-bold text-white">Session Expired</h2>
+              <p className="mt-3 text-slate-400">
+                Your login session has expired. Please sign in again to
+                continue.
+              </p>
+
+              <button
+                onClick={() => setShowSessionExpired(false)}
+                className="
+          mt-6
+          w-full
+          rounded-xl
+          bg-cyan-500
+          px-5
+          py-3
+          font-semibold
+          text-slate-950
+          hover:bg-cyan-400
+        "
+              >
+                Login Again
+              </button>
+            </div>
+          </div>
+        )}
         <h1 className="text-2xl font-bold text-white">Welcome back!</h1>
         <p className="mt-2 text-sm text-slate-400">
           Login to continue your fitness journey.
