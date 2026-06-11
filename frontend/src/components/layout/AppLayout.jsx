@@ -1,4 +1,11 @@
-import { Activity, Bot, LayoutDashboard, Salad, LogOut } from "lucide-react";
+import {
+  Activity,
+  Bot,
+  BrainCircuit,
+  LayoutDashboard,
+  Salad,
+  LogOut,
+} from "lucide-react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
@@ -22,6 +29,11 @@ const navItems = [
     label: "AI Trainer",
     path: "/ai-trainer",
     icon: Bot,
+  },
+  {
+    label: "AI Diet",
+    path: "/ai-diet",
+    icon: BrainCircuit,
   },
 ];
 
@@ -77,9 +89,7 @@ const AppLayout = () => {
                 {user?.name}
               </p>
 
-              <p className="truncate text-xs text-slate-400">
-                {user?.email}
-              </p>
+              <p className="truncate text-xs text-slate-400">{user?.email}</p>
             </div>
 
             <button
