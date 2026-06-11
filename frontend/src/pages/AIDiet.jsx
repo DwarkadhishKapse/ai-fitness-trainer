@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import api from "../services/api";
 import AIDietSkeleton from "../components/ai/AIDietSkeleton";
 
@@ -12,7 +12,9 @@ const AIDiet = () => {
   });
   const [dietPlan, setDietPlan] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [dietPlans, setDietPlans] = useState([]);
   const [generatedAt, setGeneratedAt] = useState("");
+  const [expandedPlan, setExpandedPlan] = useState(null);
 
   const handleChange = (e) => {
     setFormData({
@@ -29,6 +31,7 @@ const AIDiet = () => {
       const response = await api.post("/ai/diet-plan", formData);
 
       setDietPlan(response.data);
+      fetchDietPlans();
       setGeneratedAt(
         new Date().toLocaleString("en-IN", {
           day: "2-digit",
@@ -39,11 +42,26 @@ const AIDiet = () => {
         }),
       );
     } catch (error) {
+      alert(error.response?.data?.message || "Something went wrong.");
       console.error(error);
     } finally {
       setLoading(false);
     }
   };
+
+  const fetchDietPlans = async () => {
+    try {
+      const response = await api.get("/ai/diet-plans");
+
+      setDietPlans(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDietPlans();
+  }, []);
 
   return (
     <section className="space-y-8">
@@ -348,6 +366,109 @@ const AIDiet = () => {
           </button>
         </section>
       )}
+      <section className="space-y-4">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wider text-cyan-400">
+            HISTORY
+          </p>
+          <h2 className="mt-1 text-3xl font-bold text-white">
+            Previous Diet Plans
+          </h2>
+        </div>
+
+        <div className="space-y-4">
+          {dietPlans.map((plan) => (
+            <div
+              key={plan._id}
+              onClick={() =>
+                setExpandedPlan(expandedPlan === plan._id ? null : plan._id)
+              }
+              className="cursor-pointer
+    rounded-2xl
+    border border-slate-800
+    bg-slate-900/70
+    p-5
+    transition-all
+    hover:border-cyan-500/30"
+            >
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="">
+                  <h3 className="text-xl font-bold text-white">{plan.goal}</h3>
+                  <p className="text-slate-400">{plan.calories} Calories</p>
+                </div>
+                <p className="text-sm text-slate-500">
+                  {new Date(plan.createdAt).toLocaleString("en-IN", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
+              </div>
+              {expandedPlan === plan._id && (
+                <div className="mt-6 grid gap-6 lg:grid-cols-2">
+                  <div className="rounded-xl bg-slate-950/50 p-4">
+                    <h4 className="mb-3 text-lg font-bold text-white">
+                      🍳 Breakfast
+                    </h4>
+
+                    <ul className="space-y-2">
+                      {plan.breakfast.map((item, index) => (
+                        <li key={index} className="text-slate-300">
+                          • {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="rounded-xl bg-slate-950/50 p-4">
+                    <h4 className="mb-3 text-lg font-bold text-white">
+                      🥗 Lunch
+                    </h4>
+
+                    <ul className="space-y-2">
+                      {plan.lunch.map((item, index) => (
+                        <li key={index} className="text-slate-300">
+                          • {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="rounded-xl bg-slate-950/50 p-4">
+                    <h4 className="mb-3 text-lg font-bold text-white">
+                      🍽️ Dinner
+                    </h4>
+
+                    <ul className="space-y-2">
+                      {plan.dinner.map((item, index) => (
+                        <li key={index} className="text-slate-300">
+                          • {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="rounded-xl bg-slate-950/50 p-4">
+                    <h4 className="mb-3 text-lg font-bold text-white">
+                      🥜 Snacks
+                    </h4>
+
+                    <ul className="space-y-2">
+                      {plan.snacks.map((item, index) => (
+                        <li key={index} className="text-slate-300">
+                          • {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
     </section>
   );
 };
