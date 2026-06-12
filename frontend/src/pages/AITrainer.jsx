@@ -5,6 +5,7 @@ import { createPoseLandmarker } from "../utils/createPoseLandmarker";
 import { analyzePushup } from "../trainers/pushupTrainer";
 import { analyzeSquat } from "../trainers/squatTrainer";
 import { analyzePlank } from "../trainers/plankTrainer";
+import { analyzeLunge } from "../trainers/lungeTrainer";
 import {
   Camera,
   Dumbbell,
@@ -135,6 +136,10 @@ const AITrainer = () => {
 
           if (selectedExerciseId === "standard-squats") {
             analysis = analyzeSquat(landmarks, stageRef.current);
+          }
+
+          if(selectedExerciseId === "standard-lunges"){
+            analysis = analyzeLunge(landmarks, stageRef.current)
           }
 
           if (selectedExerciseId === "forearm-plank") {

@@ -82,6 +82,42 @@ export const workouts = [
     ],
   },
   {
+    id: "lunges",
+    name: "Lunges",
+    category: "Legs",
+    level: "beginner",
+    description:
+      "A lower-body exercise that strengthens quads, glutes, hamstrings, and improves balance.",
+    image:
+      "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=900&q=80",
+
+    variations: [
+      {
+        id: "standard-lunges",
+        name: "Standard Lunges",
+        difficulty: "Beginner",
+
+        image:
+          "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=900&q=80",
+
+        targetMuscles: ["Quads", "Glutes", "Hamstrings"],
+
+        steps: [
+          "Stand upright with feet hip-width apart.",
+          "Step one leg forward.",
+          "Lower your body until both knees are bent.",
+          "Push through the front heel to return to standing.",
+        ],
+
+        tips: [
+          "Keep your chest up.",
+          "Do not let the front knee go far past the toes.",
+          "Move slowly and maintain balance.",
+        ],
+      },
+    ],
+  },
+  {
     id: "plank",
     name: "Plank",
     category: "Core",
