@@ -179,12 +179,19 @@ npm run client
 ## Screenshots
 
 <img width="1920" height="871" alt="Screenshot (127)" src="https://github.com/user-attachments/assets/c47972bb-c7b1-4252-b947-e8d318529ba2" />
+
 <img width="1920" height="865" alt="Screenshot (128)" src="https://github.com/user-attachments/assets/3f3b2308-93cc-46ab-93b8-3d8b145b659d" />
+
 <img width="1920" height="863" alt="Screenshot (129)" src="https://github.com/user-attachments/assets/34e66519-b66a-44b1-b993-26d8f6ed4354" />
+
 <img width="1920" height="860" alt="Screenshot (130)" src="https://github.com/user-attachments/assets/ced9f7d8-cb4d-4ff3-b43c-365b38404482" />
+
 <img width="1920" height="860" alt="Screenshot (131)" src="https://github.com/user-attachments/assets/1bd59873-9279-4bbc-99cd-e6343fd78841" />
+
 <img width="1920" height="861" alt="Screenshot (132)" src="https://github.com/user-attachments/assets/7590bcff-2ab1-4a65-b492-21e0863f4021" />
+
 <img width="1920" height="857" alt="Screenshot (133)" src="https://github.com/user-attachments/assets/1a959b68-7616-47cd-b492-49ee78257d9e" />
+
 <img width="1920" height="866" alt="Screenshot (134)" src="https://github.com/user-attachments/assets/e7f403e0-3b57-4eca-938d-54803c375867" />
 
 ---
