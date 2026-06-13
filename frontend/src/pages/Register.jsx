@@ -5,6 +5,7 @@ import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -56,8 +57,23 @@ const Register = () => {
     }
   };
 
-  const handleGoogleSignup = () => {
-    alert("Google signup will be connected later.");
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setError("");
+
+      const response = await api.post("/auth/google", {
+        credential: credentialResponse.credential,
+      });
+
+      login({
+        token: response.data.token,
+        user: response.data.user,
+      });
+
+      navigate("/dashboard");
+    } catch (error) {
+      setError(error.response?.data?.message || "Google authentication failed");
+    }
   };
 
   return (
@@ -121,16 +137,14 @@ const Register = () => {
           <div className="h-px flex-1 bg-slate-800" />
         </div>
 
-        <Button
-          type="button"
-          variant="outline"
-          fullWidth
-          onClick={handleGoogleSignup}
-          className="flex items-center justify-center gap-3"
-        >
-          <FcGoogle size={22} />
-          Sign up with Google
-        </Button>
+        <div className="flex justify-center">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => {
+              setError("Google authentication failed");
+            }}
+          />
+        </div>
 
         <p className="mt-6 text-center text-sm text-slate-400">
           Already have an account?{" "}

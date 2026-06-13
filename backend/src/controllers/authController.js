@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
+import { googleClient } from "../config/googleClient.js";
 
 export async function registerUser(req, res) {
   try {
@@ -94,6 +95,61 @@ export async function loginUser(req, res) {
   } catch (error) {
     return res.status(500).json({
       message: "Login failed",
+      error: error.message,
+    });
+  }
+}
+
+export async function googleAuth(req, res) {
+  try {
+    const { credential } = req.body;
+
+    if (!credential) {
+      return res.status(400).json({
+        message: "Google credential is required",
+      });
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+
+    const email = payload.email;
+    const name = payload.name;
+    const googleId = payload.sub;
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      user = await User.create({
+        name,
+        email,
+        googleId,
+        authProvider: "google",
+      });
+    } else if (user.authProvider === "local") {
+      user.googleId = googleId;
+      await user.save();
+    }
+    const token = generateToken(user._id);
+
+    return res.status(200).json({
+      message: "Google authentication successful",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        fitnessLevel: user.fitnessLevel,
+        goal: user.goal,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Google authentication failed",
       error: error.message,
     });
   }

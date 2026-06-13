@@ -5,6 +5,7 @@ import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -59,9 +60,26 @@ const Login = () => {
       setIsLoading(false);
     }
   };
-  const handleGoogleLogin = () => {
-    alert("Google login will be connected later.");
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setError("");
+
+      const response = await api.post("/auth/google", {
+        credential: credentialResponse.credential,
+      });
+
+      login({
+        token: response.data.token,
+        user: response.data.user,
+      });
+
+      navigate("/dashboard");
+    } catch (error) {
+      setError(error.response?.data?.message || "Google authentication failed");
+    }
   };
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-slate-100">
       <section className="w-full max-w-md rounded-lg border border-slate-800 bg-slate-900 p-6 shadow-xl shadow-slate-950/50">
@@ -140,16 +158,14 @@ const Login = () => {
           <div className="h-px flex-1 bg-slate-800" />
         </div>
 
-        <Button
-          type="button"
-          variant="outline"
-          fullWidth
-          onClick={handleGoogleLogin}
-          className="flex items-center justify-center gap-3"
-        >
-          <FcGoogle size={22} />
-          Login with Google
-        </Button>
+        <div className="flex justify-center">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => {
+              setError("Google authentication failed");
+            }}
+          />
+        </div>
 
         <p className="mt-6 text-center text-sm text-slate-400">
           New here?{" "}

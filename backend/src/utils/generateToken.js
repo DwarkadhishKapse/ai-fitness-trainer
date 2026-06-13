@@ -7,3 +7,4 @@ function generateToken(userId) {
 }
 
 export default generateToken;
+  
