@@ -54,6 +54,10 @@ const AIDiet = () => {
       const response = await api.get("/ai/diet-plans");
 
       setDietPlans(response.data);
+
+      if(response.data.length > 0){
+        setDietPlan(response.data[0])
+      }
     } catch (error) {
       console.error(error);
     }
